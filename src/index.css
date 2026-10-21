@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	margin: 0;
+	font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+/* Leaflet resets that Tailwind preflight overrides. */
+.leaflet-container img.leaflet-tile {
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+}
+
+/* Price pins are plain HTML, so they need explicit sizing to be clickable. */
+.leaflet-marker-icon.rental-map-price-marker {
+	background: transparent;
+	border: 0;
+}
