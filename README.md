@@ -18,6 +18,13 @@ An authorized Vite + React renter experience with a 60-listing public inventory 
 
 These routes are a work in progress and have not been certified for pixel-perfect parity. The imported listings are a small live-data pilot; the local fixture set and some informational copy are previews and must not be treated as authoritative operational or legal guidance.
 
+## Choice integration
+
+The implementation scope, architecture mapping, policy boundaries, phase
+checklist, and AI handoff procedure for Choice-style workflows are documented
+in [Choice Integration and Agent Handoff](docs/CHOICE_INTEGRATION_HANDOFF.md).
+No property or applicant records from the Choice repository should be imported.
+
 ## Technology
 
 - React 19, TypeScript, Vite, and Tailwind CSS v4.
