@@ -66,7 +66,7 @@ function LocalModeNotice() {
   return (
     <div role="note" className="flex gap-3 border border-[#d9b55d] bg-[#fff7df] p-4 text-sm leading-6 text-[#493b18]">
       <AlertTriangle size={20} className="mt-0.5 shrink-0" />
-      <p><strong>LOCAL-ONLY MODE.</strong> This workflow saves progress in this browser tab. It does not submit an application to Invitation Homes, contact a screening provider, reserve a home, charge or refund money, create or sign a legal lease, submit a maintenance order, send a renewal/move-out notice, or send email/SMS. Do not enter sensitive or payment information.</p>
+      <p><strong>LOCAL PREVIEW MODE.</strong> This workflow previews the resident sequence in this browser tab. Operational applicant reviews, manual payments, and condition checklists are managed via the <a href="/staff/portal" className="underline font-bold">Staff Portal</a> and <a href="/tenant/portal" className="underline font-bold">Resident Portal</a>.</p>
     </div>
   );
 }
@@ -103,8 +103,8 @@ function ScreeningStep({ onDispatch }: { onDispatch: (action: TenantWorkflowActi
     <section aria-labelledby="step-title">
       <p className="text-sm font-semibold uppercase tracking-wide text-[#168241]">Step 2</p>
       <h2 id="step-title" className="mt-2 text-2xl font-semibold">Screening status</h2>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#555]">A real screening requires the approved applicant authorization, screening provider, and review process. This local workflow only records that the screening step was reviewed.</p>
-      <div className="mt-5 border-l-4 border-[#168241] bg-[#f3f6f1] p-4 text-sm leading-6">No credit report, background check, identity verification, or rental-history check is run. No eligibility decision is made.</div>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#555]">Applicant screening operates permanently on manual staff verification and review.</p>
+      <div className="mt-5 border-l-4 border-[#168241] bg-[#f3f6f1] p-4 text-sm leading-6">Staff verifies applicant income-to-rent ratio, rental history, and identity documents manually.</div>
       <button type="button" onClick={() => onDispatch({ type: 'complete_screening' })} className="mt-6 min-h-12 bg-[#168241] px-5 text-sm font-semibold text-white">Continue</button>
     </section>
   );

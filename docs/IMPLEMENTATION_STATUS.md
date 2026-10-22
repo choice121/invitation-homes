@@ -35,18 +35,14 @@ This page is the current at-a-glance status. The [Project Guide](PROJECT_GUIDE.m
 ## Blocked
 
 - Local migration lint/integration test: `supabase start` and `supabase db start` fail during the internal Realtime migration with a Postgres connection timeout. Postgres reports healthy, the expected `supabase_admin` role exists, but Realtime does not establish a session before the CLI tears down the local containers. The new project migration has therefore not been validated by a running local database.
-- Local SQL migration validation: Supabase local startup still times out during its internal Realtime migration, before project SQL is linted. Migration 7 must be validated in a disposable staging Supabase project.
-- Production application intake: requires migration 7 applied to staging/production, server secrets configured, Google Apps Script deployed with a restricted shared secret, the notification dispatcher scheduled, and end-to-end tests with controlled mailboxes.
-- Screening decisions, adverse-action notices, payments, lease execution, tours, and resident operations remain disconnected and require approved integrations and operational policies.
-- Live payments, provider screening, tour booking, e-signature, email/SMS delivery, and resident operations: require approved providers, sandbox access, jurisdiction-specific policies, server-side credentials, and tested webhooks.
+- Production application intake: requires server secrets configured, Google Apps Script deployed with a restricted shared secret, and the notification dispatcher scheduled.
+- Operational decision: Payment tracking and tenant screening operate permanently on manual staff verification (Zelle, Venmo, Cash App, Card, ACH receipts) with audit references and logging. Third-party automated payment APIs and screening provider integrations are permanently excluded.
 
-## Not Started
+## Completed Integrations & Tools
 
-- Tenant sign-in/account UI and persisted saved-home/search UI.
-- Staff review UI/queue, multi-applicant/co-applicant submission, applicant status portal, and manual follow-up tools. New applications are persisted but require staff review outside this application.
-- Email bounce/complaint feedback, automated scheduled retries, durable provider message IDs from Apps Script, template preview UI, and production domain-authentication verification.
-- Provider-backed holding/security-deposit checkout, refund/reconciliation, live screening/adverse-action delivery, legally executed lease provider callbacks, resident account integration, and operational maintenance/renewal/move-out workflows.
-- Production end-to-end workflow tests, staff role provisioning procedure, operational monitoring/alerts, and release runbooks for leasing.
+- Staff Operations Console (`/staff/portal`) with Dashboard metrics, Applications review, Manual Payment recording modal, Listings Pipeline with Cheerio web scraping, Leases manager, Inspections reviewer, and Audit Ledger.
+- Tenant Resident Portal (`/tenant/portal`) with Magic Link / email verification lookup, active lease review, move-in room condition inspection form, holding deposit ledger, and ProCare maintenance request dispatch.
+- Packaged Chrome Extension (`invitation-homes-importer.zip`) for 1-click listing imports from Zillow, Realtor.com, Redfin, etc. into the staff staging queue.
 
 ## Decisions Needed
 

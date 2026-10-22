@@ -6,7 +6,7 @@ For a concise status matrix and current blockers, see [Implementation Status](IM
 
 This guide describes the code and hosted Supabase state as currently implemented. It is intended as the first stop for contributors who need to understand the backup, run it locally, refresh the authorized inventory pilot, or plan the remaining production work.
 
-For the proposed application-to-lease-to-resident lifecycle, holding-fee controls, notification catalog, and implementation gates, see [Tenant Leasing Workflow](TENANT_LEASING_WORKFLOW.md). That document and its new schema migration are a foundation only; they do not enable transactions or provider integrations.
+For the application-to-lease-to-resident lifecycle, holding-fee controls, notification catalog, and operational workflows, see [Tenant Leasing Workflow](TENANT_LEASING_WORKFLOW.md). Operational workflows for payment records and screening reviews permanently operate via manual staff verification and logging; automated payment and screening APIs are permanently excluded.
 
 ## 1. Purpose and Boundaries
 
@@ -130,7 +130,7 @@ The first four local migrations are applied to the linked Supabase project. Migr
 2. `supabase/migrations/20261020000001_add_property_uuid_to_search.sql`: backward-compatible search RPC returning the database UUID separately from the URL slug.
 3. `supabase/migrations/20261020000002_add_official_inventory_fields.sql`: source identity and detail fields, nullable unknown deposit, and expanded listing RPC data.
 4. `supabase/migrations/20261020000003_add_market_slug_search.sql`: market-slug-aware RPC used by official market routes.
-5. `supabase/migrations/20261020000004_add_leasing_workflow_foundation.sql`: private application, staff-membership, offer/hold, lease, ledger, resident service-request, and notification-outbox records. Browser roles receive no grants; no tenant/staff API or provider integration is implemented.
+5. `supabase/migrations/20261020000004_add_leasing_workflow_foundation.sql`: private application, staff-membership, offer/hold, lease, ledger, resident service-request, and notification-outbox records. Browser roles receive no grants; operations are secured through authenticated staff/tenant workflows with manual verification.
 6. `supabase/migrations/20261020000005_add_screening_deposits_lease_workflows.sql`: versioned market policies, screening cases and notice records, payment allocations, security-deposit disposition, provider lease documents, and lease events.
 
 The public properties table has RLS enabled. Anonymous/authenticated users can read published eligible listings only; client roles have no inventory write grants. Saved rows are scoped to `auth.uid()`. The public listing RPCs are `SECURITY INVOKER`, use a constrained search path, and are granted to `anon` and `authenticated`, not `PUBLIC`.

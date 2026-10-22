@@ -9,14 +9,14 @@ repeating discovery or guessing at decisions.
 
 The user wants this project to gain Choice-style property importing, staff
 operations, applications, and tenant workflows, while **not copying Choice
-property records**. The user also wants a usable manual operating workflow
-instead of blocking on payment or screening provider integrations.
+property records**.
 
-**Confirmed operating decision:** first release uses manual, staff-recorded
-payment and screening steps only. The site will not process payments or conduct
-screening. Every manual confirmation must be attributed to an authorized staff
-user, record the evidence/reference reviewed, and be distinguishable from a
-provider-confirmed event.
+**Permanent operating decision:** Payment tracking and screening are permanent
+manual staff-recorded workflows (Zelle, Venmo, Cash App, Card, ACH receipts);
+third-party automated payment APIs and automated screening provider integrations
+are permanently excluded. Every manual confirmation is attributed to an authorized
+staff user, records the verified evidence/reference, and updates the application
+or lease state with an immutable audit event.
 
 **Do not interpret this document as approval to change production data, send
 real applicant communications, collect real payments, conduct screening, or
@@ -33,9 +33,9 @@ credentials, permissions, and a staging sign-off.
 - The next agent must verify the published handoff, complete Phase 0 discovery,
   and record the full source-to-target mapping before starting integration
   implementation.
-- The first-release operating model is decided: staff may record manual payment
-  and screening actions; the app must not process money or claim to run a
-  screening check.
+- The permanent operating model is decided: staff record manual payment
+  and screening actions; automated payment and screening APIs are permanently
+  excluded from the platform.
 
 ## Source Snapshot and Revalidation
 

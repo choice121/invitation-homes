@@ -8,7 +8,7 @@ For the current done/local-only/blocked/not-started matrix, see [docs/IMPLEMENTA
 
 The authorized Vite/React backup has a working public listing/search integration and a **60-listing pilot across 20 markets** in the linked Supabase project. The sync is repeatable and defaults to a dry-run sample. This is a development pilot, not the full property catalog and not a production leasing/resident platform.
 
-Search, market routes, property details, renter guides, public inventory RLS, and the market-aware search RPC are implemented. The official application handoff remains available. A browser-local `/tenant-workflow` now covers the full renter/resident sequence, but authentication, server-backed application/status, provider screening, payments, e-signature, notifications, tours, and resident services are not connected.
+Search, market routes, property details, renter guides, public inventory RLS, the market-aware search RPC, the Staff Operations Portal (`/staff/portal`), and the Tenant Resident Portal (`/tenant/portal`) are implemented. Permanent manual staff workflows manage payment tracking (Zelle, Venmo, Cash App, Card receipts) and screening reviews with immutable audit logging. Third-party automated payment APIs and screening provider integrations are permanently excluded.
 
 For repository structure, exact sync behavior, configuration, data fields, migrations, security boundaries, and commands, see [docs/PROJECT_GUIDE.md](docs/PROJECT_GUIDE.md).
 The tenant lifecycle, holding-fee controls, notification catalog, and proposed leasing implementation order are documented in [docs/TENANT_LEASING_WORKFLOW.md](docs/TENANT_LEASING_WORKFLOW.md).
@@ -50,11 +50,10 @@ The tenant lifecycle, holding-fee controls, notification catalog, and proposed l
 
 ### 3. Implement Renter and Resident Workflows
 
-- Review the local-only leasing foundation migration and workflow document; they are scaffolding and have not been applied to the linked hosted project.
-- The `/tenant-workflow` UI exercises application through move-out locally; build authenticated APIs and provider callbacks before treating its state as operational.
+- The Staff Operations Console (`/staff/portal`) and Tenant Resident Portal (`/tenant/portal`) provide complete operational workflows for applications, manual payments, lease management, and move-in inspections.
+- Payments and tenant screening permanently use manual staff-recorded workflows (Zelle, Venmo, Cash App, Card, ACH receipts) with audit references and logging. Automated third-party payment and screening APIs are permanently excluded.
 - Add authenticated saved homes and searches using existing RLS tables; map public slugs to database UUIDs.
-- Keep applications, applicant PII, payments, screening, e-signature, tour booking, resident maintenance, and smart-lock functions in separate approved provider integrations.
-- Before storing sensitive user data, define schemas, RLS/policies, consent, retention, audit logging, incident response, and applicable legal/fair-housing controls.
+- Maintain application records, applicant PII, and document access with strict role-based access control and audit logging.
 - Never store lock access credentials in public listing records or client-visible fields.
 
 ### 4. Finish Public Content and Release Operations

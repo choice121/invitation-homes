@@ -93,29 +93,19 @@ CREATE TABLE lease_applications (
 );`
       },
       {
-        title: 'Step 3: Add Stripe Payments for Rent & Security Deposits',
-        description: 'Integrate Stripe Checkout and Stripe Financial Connections for automated bank ACH rent collection.',
-        code: `// api/create-rent-payment.ts
-import Stripe from 'stripe';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-export async function createRentSession(propertyId: string, amount: number, tenantEmail: string) {
-  const session = await stripe.checkout.sessions.create({
-    customer_email: tenantEmail,
-    payment_method_types: ['us_bank_account', 'card'],
-    line_items: [{
-      price_data: {
-        currency: 'usd',
-        product_data: { name: \`Monthly Rent - Property #\${propertyId}\` },
-        unit_amount: amount * 100,
-      },
-      quantity: 1,
-    }],
-    mode: 'payment',
-    success_url: \`https://yourdomain.com/portal/success?session_id={CHECKOUT_SESSION_ID}\`,
-    cancel_url: 'https://yourdomain.com/portal/cancelled',
+        title: 'Step 3: Manual Staff Payment Verification & Audit Records',
+        description: 'Record and verify manual payments (Zelle, Venmo, Cash App, Card receipts, ACH) with staff attribution and audit reference codes.',
+        code: `// services/adminOperations.ts
+export async function recordPayment(applicationId: string, method: string, ref: string, amount: number) {
+  // Permanent manual payment tracking with staff audit logging
+  return recordManualPayment(applicationId, {
+    paymentType: 'holding_deposit',
+    method: method as any,
+    referenceCode: ref,
+    amount,
+    status: 'verified',
+    verifiedBy: 'Staff Operator'
   });
-  return session.url;
 }`
       }
     ],

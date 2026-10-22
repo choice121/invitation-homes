@@ -149,7 +149,7 @@ The Express server also contains development cloner endpoints, including `/api/c
 
 ## Backend Status
 
-The Supabase schema, RLS policies, versioned search RPCs, browser client, inventory repository, and official-source sync are implemented. Four migrations are applied to the linked hosted project, which currently contains 60 source-managed pilot listings across 20 markets. Next backend work is to decide whether to expand the import, configure ImageKit, implement authenticated saved homes/searches, and connect approved application/tour/resident providers. Screening, e-signatures, payments, maintenance dispatch, and smart-lock access require authorized provider APIs and security controls; Supabase by itself does not supply those services.
+The Supabase schema, RLS policies, versioned search RPCs, browser client, inventory repository, and official-source sync are implemented. The Staff Operations Console (`/staff/portal`) and Tenant Resident Portal (`/tenant/portal`) provide full operational management for listing staging, application reviews, lease agreements, and move-in inspections. Payment records (Zelle, Venmo, Cash App, Card receipts) and tenant screening reviews operate permanently on manual staff verification with immutable audit logging; automated payment and screening APIs are permanently excluded.
 
 ## Authorization and License
 
