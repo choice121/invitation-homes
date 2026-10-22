@@ -5,7 +5,7 @@ import JSZip from 'jszip';
 async function packageExtension() {
   const zip = new JSZip();
   const extensionDir = path.resolve('public/extension');
-  const files = ['manifest.json', 'popup.html', 'popup.js', 'content.js', 'background.js'];
+  const files = ['manifest.json', 'popup.html', 'popup.js', 'content.js', 'background.js', 'shared-extractors.js'];
 
   for (const file of files) {
     const filePath = path.join(extensionDir, file);

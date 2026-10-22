@@ -29,9 +29,12 @@
         "https://*.redfin.com/*",
         "https://*.apartments.com/*",
         "https://*.rentprogress.com/*",
+        "https://*.opendoor.com/*",
+        "https://*.cjproperties.org/*",
+        "https://*.cjrealestate.com/*",
         "https://*.invitationhomes.com/*"
       ],
-      "js": ["content.js"],
+      "js": ["shared-extractors.js", "content.js"],
       "run_at": "document_idle"
     }
   ],

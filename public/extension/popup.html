@@ -5,17 +5,18 @@
   <title>Invitation Homes Importer</title>
   <style>
     body {
-      width: 320px;
+      width: 340px;
       margin: 0;
       padding: 16px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: #231f20;
       background: #ffffff;
+      box-sizing: border-box;
     }
     .header {
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
       border-bottom: 2px solid #168241;
       padding-bottom: 10px;
       margin-bottom: 12px;
@@ -24,59 +25,163 @@
       font-size: 14px;
       font-weight: 700;
       color: #168241;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .version-tag {
+      font-size: 10px;
+      font-weight: 600;
+      background: #eef7ee;
+      color: #168241;
+      padding: 2px 6px;
+      border-radius: 4px;
     }
     .status-box {
-      background: #f4f5f2;
-      border: 1px solid #e2e2e2;
-      padding: 10px;
-      border-radius: 4px;
+      background: #f8faf8;
+      border: 1px solid #dce5dc;
+      padding: 12px;
+      border-radius: 6px;
       font-size: 12px;
       margin-bottom: 12px;
     }
     .field-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 4px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .field-row:last-child {
+      margin-bottom: 0;
+    }
+    .field-label {
+      color: #555;
+      font-weight: 500;
+    }
+    .field-value {
+      font-weight: 600;
+      color: #231f20;
+      max-width: 200px;
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .field-input {
+      width: 90px;
+      padding: 3px 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 12px;
+      text-align: right;
+      font-weight: 600;
+    }
+    .photo-strip {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-top: 8px;
+      padding-bottom: 4px;
+    }
+    .photo-thumb {
+      width: 54px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #ddd;
     }
     .btn-import {
       width: 100%;
       background: #168241;
       color: white;
       border: none;
-      padding: 10px;
+      padding: 11px;
       font-weight: 700;
       font-size: 13px;
       cursor: pointer;
       border-radius: 4px;
+      transition: background 0.15s ease;
     }
     .btn-import:hover {
       background: #0b763c;
     }
+    .btn-import:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
     .note {
       font-size: 11px;
-      color: #777;
-      margin-top: 8px;
+      color: #666;
+      margin-top: 10px;
       text-align: center;
+      line-height: 1.4;
+    }
+    .detected-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      background: #231f20;
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-bottom: 8px;
     }
   </style>
 </head>
 <body>
   <div class="header">
-    <div class="brand-title">Invitation Homes Importer</div>
-  </div>
-  <div id="loading">Detecting listing details...</div>
-  <div id="content" style="display:none;">
-    <div class="status-box">
-      <div class="field-row"><strong>Address:</strong> <span id="prop-addr">-</span></div>
-      <div class="field-row"><strong>Rent:</strong> <span id="prop-rent">-</span></div>
-      <div class="field-row"><strong>Beds / Baths:</strong> <span id="prop-beds">-</span></div>
+    <div class="brand-title">
+      <span>Invitation Homes</span>
     </div>
-    <button id="import-btn" class="btn-import">Save to Staging Queue</button>
-    <div class="note">Listing will be reviewed before publishing to live inventory.</div>
+    <span class="version-tag">Staging v2.0</span>
   </div>
-  <div id="success" style="display:none; color: #168241; font-weight: bold; text-align: center; padding: 10px;">
-    ✓ Successfully added to Invitation Homes Staging Queue!
+
+  <div id="loading" style="padding: 16px 0; font-size: 12px; color: #666; text-align: center;">
+    Detecting listing details from active tab...
   </div>
+
+  <div id="content" style="display:none;">
+    <div>
+      <span id="prop-platform" class="detected-badge">Portal Listing</span>
+    </div>
+
+    <div class="status-box">
+      <div class="field-row">
+        <span class="field-label">Address:</span>
+        <span id="prop-addr" class="field-value">-</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Monthly Rent:</span>
+        <span>$<input id="prop-rent-input" type="number" class="field-input" value="2400" /></span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Security Deposit:</span>
+        <span>$<input id="prop-deposit-input" type="number" class="field-input" value="2400" /></span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Beds / Baths:</span>
+        <span id="prop-specs" class="field-value">3 bed, 2 bath</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Square Feet:</span>
+        <span id="prop-sqft" class="field-value">1,800 sq ft</span>
+      </div>
+      <div id="photo-container" style="display:none; margin-top: 8px;">
+        <span class="field-label" style="font-size: 11px;">Extracted Photos (<span id="photo-count">0</span>):</span>
+        <div id="photo-strip" class="photo-strip"></div>
+      </div>
+    </div>
+
+    <button id="import-btn" class="btn-import">Stage for Staff Review</button>
+    <div class="note">Imports into Invitation Homes Staging Pipeline. Never automatically published.</div>
+  </div>
+
+  <div id="success" style="display:none; text-align: center; padding: 20px 0;">
+    <div style="color: #168241; font-size: 28px; margin-bottom: 6px;">✓</div>
+    <div style="font-weight: 700; font-size: 14px; color: #168241;">Staged Successfully!</div>
+    <div style="font-size: 12px; color: #555; margin-top: 6px;">Listing is now awaiting staff review in the Staff Operations Portal.</div>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
