@@ -11,6 +11,8 @@ import { getPropertyImages } from '../lib/propertyImages';
 import { TenantWorkflowPortal } from './TenantWorkflowPortal';
 import { ApplicationIntakePage } from './ApplicationIntakePage';
 import { StaffApplicationsPage } from './StaffApplicationsPage';
+import { StaffPortal } from './StaffPortal';
+import { TenantPortal } from './TenantPortal';
 
 const contentPages: Record<string, { title: string; intro: string; links: [string, string][] }> = {
   '/communities/': { title: 'Rental communities', intro: 'Explore newly built single-family rental homes in select communities.', links: [['Find homes for rent', '/search/houses-for-rent'], ['Before you apply', '/before-you-apply']] },
@@ -444,8 +446,12 @@ function ContentPage({ path }: { path: string }) {
 }
 
 export function OfficialRentalPage({ path }: { path: string }) {
-  if (path === '/tenant-workflow') return <TenantWorkflowPortal />;
-  if (path === '/staff/applications' || path === '/admin/applications') return <StaffApplicationsPage />;
+  if (path === '/staff/portal' || path === '/admin/portal' || path === '/staff/applications' || path === '/admin/applications' || path === '/admin') {
+    return <StaffPortal />;
+  }
+  if (path === '/tenant-workflow' || path === '/tenant/portal' || path === '/resident/portal') {
+    return <TenantPortal />;
+  }
   if (path.startsWith('/apply/')) return <ApplicationIntakePage propertySlug={decodeURIComponent(path.slice('/apply/'.length))} />;
   if (path.startsWith('/search/')) {
     return <SearchPage />;

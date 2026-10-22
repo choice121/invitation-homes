@@ -171,7 +171,11 @@ export function StaffApplicationsPage() {
               petsCount: details.pets_count || 0,
               status: row.status as ApplicationStatus,
               createdAt: row.created_at,
-              emailVerified: Boolean(row.email_verified_at)
+              emailVerified: Boolean(row.email_verified_at),
+              primaryPaymentMethod: details.primary_payment_method || 'Zelle',
+              paymentHandle: details.payment_handle || undefined,
+              paymentStatus: (row.payment_status as 'unpaid' | 'paid' | 'waived') || 'unpaid',
+              paymentReference: row.payment_reference || undefined
             };
           });
           setApplications(mapped);

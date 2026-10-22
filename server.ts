@@ -4,6 +4,25 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import * as cheerio from 'cheerio';
 import { ApplicationApiEnvironment, handleApplicationNotificationDispatch, handleApplicationStatusUpdate, handleApplicationSubmission, handleApplicationVerification, handleApplicationVerificationConfirmation } from './src/services/applicationApi';
+import {
+  getStagedProperties,
+  addStagedProperty,
+  updateStagedStatus,
+  publishStagedProperty,
+  scrapePublicListingUrl
+} from './src/services/stagingPipeline';
+import {
+  recordManualPayment,
+  getPaymentRecords,
+  getLeaseAgreements,
+  createLeaseAgreement,
+  updateLeaseStatus,
+  getInspections,
+  submitPropertyInspection,
+  reviewInspection,
+  getAuditLogs
+} from './src/services/adminOperations';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -201,6 +220,154 @@ async function startServer() {
     });
     const response = await handleApplicationStatusUpdate(request, process.env as ApplicationApiEnvironment);
     res.status(response.status).set(Object.fromEntries(response.headers.entries())).send(await response.text());
+  });
+
+  // Staging Pipeline & Importer Routes
+  app.get('/api/pipeline/staged', async (_req, res) => {
+    try {
+      const staged = await getStagedProperties();
+      res.json(staged);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to fetch staged properties' });
+    }
+  });
+
+  app.post('/api/pipeline/scrape-url', express.json({ limit: '16kb' }), async (req, res) => {
+    try {
+      const { url } = req.body;
+      if (!url || typeof url !== 'string') {
+        return res.status(400).json({ error: 'Please provide a valid listing URL.' });
+      }
+      const data = await scrapePublicListingUrl(url);
+      res.json(data);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to extract listing metadata' });
+    }
+  });
+
+  app.post('/api/pipeline/stage', express.json({ limit: '64kb' }), async (req, res) => {
+    try {
+      const staged = await addStagedProperty(req.body);
+      res.status(201).json(staged);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to stage property' });
+    }
+  });
+
+  app.post('/api/pipeline/:id/publish', async (req, res) => {
+    try {
+      const result = await publishStagedProperty(req.params.id);
+      if (!result.success) return res.status(400).json({ error: result.error });
+      res.json(result);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to publish property' });
+    }
+  });
+
+  app.post('/api/pipeline/:id/reject', async (req, res) => {
+    try {
+      await updateStagedStatus(req.params.id, 'rejected');
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to reject staged property' });
+    }
+  });
+
+  // Manual Payment Recording
+  app.post('/api/internal/applications/:id/payment', express.json({ limit: '16kb' }), async (req, res) => {
+    try {
+      const record = await recordManualPayment(req.params.id, req.body);
+      res.status(201).json(record);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to record payment' });
+    }
+  });
+
+  app.get('/api/internal/applications/:id/payments', async (req, res) => {
+    try {
+      const records = await getPaymentRecords(req.params.id);
+      res.json(records);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to retrieve payment records' });
+    }
+  });
+
+  // Leases Management
+  app.get('/api/internal/leases', async (req, res) => {
+    try {
+      const tenantEmail = typeof req.query.email === 'string' ? req.query.email : undefined;
+      const leases = await getLeaseAgreements(tenantEmail);
+      res.json(leases);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to fetch leases' });
+    }
+  });
+
+  app.post('/api/internal/leases', express.json({ limit: '32kb' }), async (req, res) => {
+    try {
+      const lease = await createLeaseAgreement(req.body);
+      res.status(201).json(lease);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to create lease' });
+    }
+  });
+
+  app.post('/api/internal/leases/:id/status', express.json({ limit: '16kb' }), async (req, res) => {
+    try {
+      const ok = await updateLeaseStatus(req.params.id, req.body.status);
+      res.json({ success: ok });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to update lease status' });
+    }
+  });
+
+  // Inspections
+  app.get('/api/internal/inspections', async (req, res) => {
+    try {
+      const tenantEmail = typeof req.query.email === 'string' ? req.query.email : undefined;
+      const inspections = await getInspections(tenantEmail);
+      res.json(inspections);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to fetch inspections' });
+    }
+  });
+
+  app.post('/api/tenant/inspection', express.json({ limit: '64kb' }), async (req, res) => {
+    try {
+      const inspection = await submitPropertyInspection(req.body);
+      res.status(201).json(inspection);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to submit inspection' });
+    }
+  });
+
+  app.post('/api/internal/inspections/:id/review', express.json({ limit: '16kb' }), async (req, res) => {
+    try {
+      const ok = await reviewInspection(req.params.id, req.body.status || 'reviewed');
+      res.json({ success: ok });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to review inspection' });
+    }
+  });
+
+  // Audit Logs
+  app.get('/api/internal/audit-logs', async (_req, res) => {
+    try {
+      const logs = await getAuditLogs();
+      res.json(logs);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || 'Failed to fetch audit logs' });
+    }
+  });
+
+  // Chrome Extension Download
+  app.get('/api/extension/download', (_req, res) => {
+    const zipPath = path.resolve(__dirname, 'public/extension/invitation-homes-importer.zip');
+    if (fs.existsSync(zipPath)) {
+      res.download(zipPath, 'invitation-homes-importer.zip');
+    } else {
+      res.status(404).json({ error: 'Extension bundle not generated yet.' });
+    }
   });
 
   if (process.env.NODE_ENV !== 'production' && process.env.ENABLE_CLONER_API === 'true') {

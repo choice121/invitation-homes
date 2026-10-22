@@ -164,41 +164,51 @@ function searchFixtureListings(params: ListingSearchParams): ListingSearchResult
 export async function searchPropertyListings(params: ListingSearchParams): Promise<ListingSearchResult> {
   if (!supabaseClient) return searchFixtureListings(params);
 
-  const { data, error } = await supabaseClient.rpc('search_public_properties_v3', {
-    p_query: params.query.trim() || null,
-    p_market_slug: params.marketSlug ?? null,
-    p_min_price: params.minPrice ? Number(params.minPrice) : null,
-    p_max_price: params.maxPrice ? Number(params.maxPrice) : null,
-    p_bedrooms: params.bedrooms === 'any' ? null : Number(params.bedrooms),
-    p_bathrooms: params.bathrooms === 'any' ? null : Number(params.bathrooms),
-    p_min_sqft: params.minSqft ? Number(params.minSqft) : null,
-    p_max_sqft: params.maxSqft ? Number(params.maxSqft) : null,
-    p_pet_friendly: params.petFriendly,
-    p_smart_home: params.smartHome,
-    p_sort_order: params.sortOrder,
-    p_page: params.page,
-    p_page_size: params.pageSize
-  });
+  try {
+    const { data, error } = await supabaseClient.rpc('search_public_properties_v3', {
+      p_query: params.query.trim() || null,
+      p_market_slug: params.marketSlug ?? null,
+      p_min_price: params.minPrice ? Number(params.minPrice) : null,
+      p_max_price: params.maxPrice ? Number(params.maxPrice) : null,
+      p_bedrooms: params.bedrooms === 'any' ? null : Number(params.bedrooms),
+      p_bathrooms: params.bathrooms === 'any' ? null : Number(params.bathrooms),
+      p_min_sqft: params.minSqft ? Number(params.minSqft) : null,
+      p_max_sqft: params.maxSqft ? Number(params.maxSqft) : null,
+      p_pet_friendly: params.petFriendly,
+      p_smart_home: params.smartHome,
+      p_sort_order: params.sortOrder,
+      p_page: params.page,
+      p_page_size: params.pageSize
+    });
 
-  if (error) throw error;
-  const rows = (data ?? []) as PropertyRecord[];
-  return {
-    listings: rows.map(mapProperty),
-    totalCount: Number(rows[0]?.total_count ?? 0)
-  };
+    if (error) throw error;
+    const rows = (data ?? []) as PropertyRecord[];
+    return {
+      listings: rows.map(mapProperty),
+      totalCount: Number(rows[0]?.total_count ?? 0)
+    };
+  } catch (err) {
+    console.warn('Supabase search failed, falling back to fixture data:', err);
+    return searchFixtureListings(params);
+  }
 }
 
 export async function getPropertyBySlug(slug: string): Promise<PropertyListing | null> {
   if (!supabaseClient) return SAMPLE_PROPERTIES.find((property) => property.id === slug) ?? null;
 
-  const { data, error } = await supabaseClient
-    .from('properties')
-    .select('*')
-    .eq('slug', slug)
-    .eq('published', true)
-    .in('status', ['available', 'pending', 'coming_soon'])
-    .maybeSingle();
+  try {
+    const { data, error } = await supabaseClient
+      .from('properties')
+      .select('*')
+      .eq('slug', slug)
+      .eq('published', true)
+      .in('status', ['available', 'pending', 'coming_soon'])
+      .maybeSingle();
 
-  if (error) throw error;
-  return data ? mapProperty(data as PropertyRecord) : null;
+    if (error) throw error;
+    return data ? mapProperty(data as PropertyRecord) : (SAMPLE_PROPERTIES.find((property) => property.id === slug) ?? null);
+  } catch (err) {
+    console.warn('Supabase property lookup failed, falling back to fixture data:', err);
+    return SAMPLE_PROPERTIES.find((property) => property.id === slug) ?? null;
+  }
 }

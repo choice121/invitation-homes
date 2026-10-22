@@ -150,8 +150,11 @@ export function ApplicationIntakePage({ propertySlug }: { propertySlug: string }
                   <p>3. <strong>Background & Screening</strong>: Once fee payment is verified, your screening will be activated immediately.</p>
                 </div>
 
-                <div className="mt-6">
-                  <a href="/search/houses-for-rent" className="inline-flex min-h-11 items-center justify-center rounded bg-[#168241] px-5 text-sm font-semibold text-white hover:bg-[#0b763c]">
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <a href="/tenant/portal" className="inline-flex min-h-11 items-center justify-center rounded bg-[#168241] px-5 text-sm font-semibold text-white hover:bg-[#0b763c]">
+                    Go to Resident Portal
+                  </a>
+                  <a href="/search/houses-for-rent" className="inline-flex min-h-11 items-center justify-center rounded border border-[#168241] px-5 text-sm font-semibold text-[#168241] hover:bg-neutral-50">
                     Return to Home Search
                   </a>
                 </div>

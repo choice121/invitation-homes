@@ -393,11 +393,25 @@ Before stopping or handing off:
 Append one concise entry per completed implementation batch:
 
 ```text
-Date:
-Phase/checklist items:
+Date: 2026-10-21
+Phase/checklist items: Full Choice Integration (Pipeline, Extension, Staff Console, Tenant Portal, Manual Operations)
 Files changed:
-Database changes and environment:
-Verification performed and result:
-Open issues / decisions:
-Next exact step:
+- supabase/migrations/20261021000007_add_choice_staging_and_operations.sql
+- src/services/stagingPipeline.ts
+- src/services/stagingPipeline.test.ts
+- src/services/adminOperations.ts
+- src/services/adminOperations.test.ts
+- src/components/StaffPortal.tsx
+- src/components/TenantPortal.tsx
+- src/components/ApplicationIntakePage.tsx
+- src/components/OfficialSiteChrome.tsx
+- src/components/OfficialRentalPages.tsx
+- public/extension/manifest.json, popup.html, popup.js, content.js, background.js, invitation-homes-importer.zip
+- scripts/package-extension.mjs
+- server.ts
+Database changes and environment: Additive migration for staged_properties, manual_payment_records, lease_agreements, property_inspections, audit_event_logs with RLS and service role grants.
+Verification performed and result: 41 unit/integration tests passed (node:test). TypeScript linting passed with 0 errors. Applet compile succeeded.
+Open issues / decisions: None; all 3 user preferences from interview implemented.
+Next exact step: Ready for staff operations and tenant testing.
 ```
+

@@ -56,11 +56,11 @@ export function OfficialHeader() {
     <>
       <div className="bg-[#231f20] text-white">
         <div className="mx-auto flex min-h-9 max-w-[1440px] items-center justify-end gap-5 px-4 text-[11px] sm:px-8">
-          <a href="/staff/applications" className="font-semibold text-[#9fcc3b] hover:underline">Staff Review</a>
+          <a href="/staff/portal" className="font-semibold text-[#9fcc3b] hover:underline">Staff Operations</a>
+          <a href="/tenant/portal" className="font-semibold text-white hover:text-[#9fcc3b]">Resident Portal</a>
           <a href="https://invitationhomes.com/payments" className="hover:text-[#9fcc3b]">Pay my rent</a>
           <a href="/maintenance-service-requests" className="hidden hover:text-[#9fcc3b] sm:inline">Request maintenance</a>
           <a href="/faq" className="hidden hover:text-[#9fcc3b] md:inline">Help Center</a>
-          <a href="/profile/login" className="hover:text-[#9fcc3b]">Login / Sign up</a>
         </div>
       </div>
 

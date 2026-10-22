@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Invitation Homes Importer</title>
+  <style>
+    body {
+      width: 320px;
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #231f20;
+      background: #ffffff;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid #168241;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #168241;
+    }
+    .status-box {
+      background: #f4f5f2;
+      border: 1px solid #e2e2e2;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    .field-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .btn-import {
+      width: 100%;
+      background: #168241;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .btn-import:hover {
+      background: #0b763c;
+    }
+    .note {
+      font-size: 11px;
+      color: #777;
+      margin-top: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand-title">Invitation Homes Importer</div>
+  </div>
+  <div id="loading">Detecting listing details...</div>
+  <div id="content" style="display:none;">
+    <div class="status-box">
+      <div class="field-row"><strong>Address:</strong> <span id="prop-addr">-</span></div>
+      <div class="field-row"><strong>Rent:</strong> <span id="prop-rent">-</span></div>
+      <div class="field-row"><strong>Beds / Baths:</strong> <span id="prop-beds">-</span></div>
+    </div>
+    <button id="import-btn" class="btn-import">Save to Staging Queue</button>
+    <div class="note">Listing will be reviewed before publishing to live inventory.</div>
+  </div>
+  <div id="success" style="display:none; color: #168241; font-weight: bold; text-align: center; padding: 10px;">
+    ✓ Successfully added to Invitation Homes Staging Queue!
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
