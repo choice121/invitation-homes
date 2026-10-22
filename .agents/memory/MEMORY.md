@@ -1,0 +1,1 @@
+- [Choice integration decisions](choice-integration-decisions.md) — no Choice property rows; manual staff-recorded payment and screening only in the first release.

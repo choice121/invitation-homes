@@ -12,10 +12,30 @@ operations, applications, and tenant workflows, while **not copying Choice
 property records**. The user also wants a usable manual operating workflow
 instead of blocking on payment or screening provider integrations.
 
+**Confirmed operating decision:** first release uses manual, staff-recorded
+payment and screening steps only. The site will not process payments or conduct
+screening. Every manual confirmation must be attributed to an authorized staff
+user, record the evidence/reference reviewed, and be distinguishable from a
+provider-confirmed event.
+
 **Do not interpret this document as approval to change production data, send
 real applicant communications, collect real payments, conduct screening, or
 publish imported listings.** Those actions require approved policies,
 credentials, permissions, and a staging sign-off.
+
+## Current Handoff Status
+
+- This is a documentation-first handoff. No Choice code, property records,
+  applicant records, tenant records, or production credentials have been
+  imported into this project.
+- The user asked to publish this handoff to the Invitation Homes GitHub
+  repository before feature implementation continues.
+- The next agent must verify the published handoff, complete Phase 0 discovery,
+  and record the full source-to-target mapping before starting integration
+  implementation.
+- The first-release operating model is decided: staff may record manual payment
+  and screening actions; the app must not process money or claim to run a
+  screening check.
 
 ## Source Snapshot and Revalidation
 
@@ -53,6 +73,9 @@ Cloudflare settings, email account, or third-party provider accounts.
    reference they reviewed.
 8. Never claim an action is complete unless it has been verified against the
    relevant role, state, and error path.
+9. Manual payment/screening records are approved for the first release. The
+   actual allowed payment methods, screening criteria, notices, and evidence
+   requirements still need Invitation Homes policy approval.
 
 ## Architecture Comparison
 
@@ -65,6 +88,48 @@ Cloudflare settings, email account, or third-party provider accounts.
 | One-off intake | Admin URL import and browser extension | No complete review-first admin pipeline yet | Port staging, provenance, deduplication, and manual review |
 | Application data | Choice `applications` and related operations | Existing `leasing_applications`, contact, consent, event, and notification records | Use one canonical target application model; do not create parallel active records |
 | Admin UI | Separate static admin pages | Staff application screen and early workflow UI | Implement secured React admin workflows with role checks and audit history |
+
+## Choice Source Capability Inventory
+
+This is the discovered top-level capability map, not permission to copy code or
+policies blindly. During Phase 0, re-open the current Choice source and add the
+exact source file/function, table, job, and permission mapping for each row.
+
+| Capability | What the source project contains | Target treatment |
+|---|---|---|
+| Property collection | Python pipeline and source-specific listing extractors, including an Invitation Homes browser-extension extractor | Revalidate each source, access method, and terms; implement only an approved source adapter |
+| Browser-assisted imports | Chrome extension that extracts listing details and images from a supported page | Adapt only after source/page authorization, data provenance, and user review controls are defined |
+| Admin URL imports | Staff-oriented listing intake and review path | Stage records; validate, deduplicate, audit, and explicitly publish |
+| Listing enrichment | Normalization, competitor/source filtering, image handling, and validation rules | Map each rule separately; Choice's competitor rules can exclude Invitation Homes listings |
+| Applications | Applicant queue, application statuses, review actions, and communication/document handling | Use the existing Invitation Homes application source of truth; retain email verification and add staff authorization |
+| Payment coordination | Staff-entered fee and holding-payment status, including paid/unpaid/waived/refunded actions | Manual records only; no Choice-specific payment rail, amount, fee, or wording without approval |
+| Screening coordination | Staff-entered screening workflow and decision tracking | Manual review record only; no consumer-report order or automated screening claim |
+| Leasing and move-in | Lease, move-in, and related administrative records/actions | Map to existing leasing models; keep legal documents and signatures protected |
+| Property operations | Inspection and deposit accounting workflows | Adapt only after Invitation Homes policy, role, and accounting rules are confirmed |
+| People and communications | Landlord, message, and email-log tools | Map business ownership, access scopes, delivery/retry behavior, and audit requirements |
+| Governance tools | Audit, state-law, and watermark-related operations | Rebuild only where the tool and policy apply to Invitation Homes; do not import Choice legal rules |
+
+### Choice runtime and infrastructure
+
+The source is not a single app that can be copied into this React project. It
+combines a static HTML/JavaScript admin experience, Cloudflare Pages Functions,
+Supabase Edge Functions and PostgreSQL, Python ingestion jobs, and a Chrome
+extension. Phase 0 must inventory these boundaries explicitly, including:
+
+- UI routes, roles, and actions
+- Edge/Pages functions and their request/response contracts
+- Tables, views, RPCs, triggers, RLS policies, storage buckets, and scheduled
+  jobs
+- Pipeline stages, retry/idempotency behavior, provenance, image processing,
+  and deduplication
+- Required environment-variable **names** and which service owns each one; do
+  not copy or reveal any secret values
+- External services, source endpoints, operational permissions, and source
+  terms
+
+The checked-in Choice migrations are only partial schema deltas, not a safe
+standalone schema baseline. Request or create a reviewed schema inventory before
+porting a function that depends on Choice tables.
 
 ## Findings That Must Not Be Lost
 
@@ -260,12 +325,13 @@ capability is implied.
 ## Decisions Still Needed
 
 These decisions are blockers for production policy, not for documenting or
-building the general technical framework:
+building the general technical framework. The first release's manual-record
+approach is already approved; the following details remain open:
 
-1. Whether Choice's manual payment-entry pattern is approved for Invitation
-   Homes, and which payment instructions, evidence, and staff roles are allowed.
-2. Whether screening is to be recorded as a manually completed external process,
-   and which criteria, review controls, and notices apply.
+1. Which manual payment methods, evidence, approval roles, and refund controls
+   are allowed.
+2. Which screening criteria, review controls, and required notices apply to
+   manually recorded screening decisions.
 3. Invitation Homes-approved fees, deposits, holding terms, refunds, lease
    language, communications, and document retention.
 4. Which official or otherwise authorized sources may feed property imports.
@@ -288,6 +354,32 @@ Before making changes:
 4. Identify the exact checklist item being implemented and its prerequisites.
 5. Do not start a scraper, publish records, send applicant communications,
    alter payment status, or touch production data during discovery.
+
+### Immediate next-agent instructions
+
+1. Check the GitHub target repository and verify that this handoff and the
+   README link are present. If not, finish the documentation-only push first.
+2. Check `git status`, current branch, remotes, and recent commits. Never push
+   unrelated changes or credentials.
+3. Revalidate Choice `main` and record the current commit before relying on the
+   audited snapshot above.
+4. Produce a source map that lists every admin route, importer, scraper/job,
+   extension flow, database object, status, manual action, permission, and
+   external dependency discovered. Include file paths and line/function
+   references so a later agent can find each item.
+5. Create the field/status/role mapping to Invitation Homes and label every
+   Choice behavior `port`, `adapt`, `replace`, or `exclude`, with a reason.
+6. Review this project's current migrations, RLS, API routes, and UI against
+   that map. Resolve ownership and security gaps before adding new tables or
+   endpoints.
+7. Update this handoff and the source map with findings, test results, and the
+   exact next implementation slice. Do not claim the full platform is ready
+   from documentation, a build, or a visual-only test.
+
+Implementation work should use focused commits and staging verification. Push
+only the intended project changes to the Invitation Homes repository. Do not
+push to the Choice repository or modify its production systems unless the user
+explicitly requests that separate work.
 
 Before stopping or handing off:
 
